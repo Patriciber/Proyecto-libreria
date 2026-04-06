@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="page_title">Lumière - Digital Library</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <button id="btnSidebarToggle" class="sidebar-toggle-btn">
+                    <i class="ri-menu-fold-line"></i>
+                </button>
+                <i class="ri-book-3-fill"></i>
+                <span>Lumière</span>
+            </div>
+
+            <nav class="nav-menu">
+                <p class="nav-label" data-i18n="menu_label">MENU</p>
+                <a href="#" class="nav-item active" data-tab="inicio"><i class="ri-home-5-line"></i> <span
+                        data-i18n="nav_inicio">Inicio</span></a>
+                <a href="#" class="nav-item" data-tab="explorar"><i class="ri-compass-3-line"></i> <span
+                        data-i18n="nav_explore">Explorar</span></a>
+                <a href="#" class="nav-item" data-tab="mis-libros"><i class="ri-bookmark-line"></i> <span
+                        data-i18n="nav_library">Mi Biblioteca</span></a>
+                <a href="#" class="nav-item" data-tab="favoritos"><i class="ri-heart-3-line"></i> <span
+                        data-i18n="nav_favorites">Favoritos</span></a>
+            </nav>
+
+            <!-- System Diagnostic Section -->
+            <nav class="nav-menu" style="margin-top: -10px;">
+                <p class="nav-label">HERRAMIENTAS</p>
+                <a href="#" class="nav-item" id="btnSystemStatus">
+                    <i class="ri-shield-check-line"></i> <span>Estado Sistema</span>
+                </a>
+            </nav>
+
+            <nav class="nav-menu" id="sidebarGenreFilter">
+                <p class="nav-label" data-i18n="categories_label">GÉNEROS</p>
+                <!-- Filtros rápidos de género -->
+                <a href="#" class="nav-item category-filter active" data-category="all"><i
+                        class="ri-layout-grid-line"></i> <span data-i18n="cat_all">Todos</span></a>
+                <a href="#" class="nav-item category-filter" data-category="ciencia_ficcion"><i
+                        class="ri-rocket-line"></i> <span data-i18n="cat_scifi">Ciencia Ficción</span></a>
+                <a href="#" class="nav-item category-filter" data-category="fantasia"><i class="ri-magic-line"></i>
+                    <span data-i18n="cat_fantasy">Fantasía</span></a>
+                <a href="#" class="nav-item category-filter" data-category="romance"><i class="ri-empathize-line"></i>
+                    <span data-i18n="cat_romance">Romance</span></a>
+                <a href="#" class="nav-item category-filter" data-category="misterio"><i class="ri-search-eye-line"></i>
+                    <span data-i18n="cat_mystery">Misterio</span></a>
+                <a href="#" class="nav-item category-filter" data-category="tecnologia"><i class="ri-macbook-line"></i>
+                    <span data-i18n="cat_tech">Tecnología</span></a>
+                <a href="#" class="nav-item category-filter" data-category="autoayuda"><i
+                        class="ri-psychotherapy-line"></i> <span data-i18n="cat_selfhelp">Autoayuda</span></a>
+                <a href="#" class="nav-item category-filter" data-category="negocios"><i
+                        class="ri-briefcase-4-line"></i> <span data-i18n="cat_business">Negocios</span></a>
+                <a href="#" class="nav-item category-filter" data-category="historia"><i class="ri-book-line"></i> <span
+                        data-i18n="cat_history">Historia</span></a>
+            </nav>
+
+            <!-- User Auth / Profile Area -->
+            <div class="user-profile-sm" id="userProfileBtn">
+                <img src="https://i.pravatar.cc/150?img=12" alt="User Profile" class="avatar" style="display: none;"
+                    id="userAvatarImg">
+                <i class="ri-user-unfollow-line avatar-placeholder" id="userAvatarPlaceholder"></i>
+                <div class="user-info">
+                    <span class="name" id="userNameDisplay" data-i18n="login_prompt">Iniciar Sesión</span>
+                    <span class="plan" id="userPlanDisplay" style="display:none;">Free Member</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar libros, autores, géneros..."
+                        data-i18n-placeholder="search_placeholder">
+                </div>
+
+                <div class="header-actions">
+                    <!-- Language Switcher -->
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" data-lang="es">ES</button>
+                        <span class="lang-div">/</span>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+
+                    <button class="icon-btn"><i class="ri-notification-3-line"></i><span class="badge"></span></button>
+                    <button class="icon-btn"><i class="ri-settings-4-line"></i></button>
+                    <button class="upgrade-btn" data-i18n="btn_premium">Premium</button>
+                </div>
+            </header>
+
+            <!-- Content Area (Tabs Container) -->
+            <div class="content-scroll">
+
+                <!-- INICIO TAB -->
+                <div class="tab-content active" id="tab-inicio">
+                    <!-- Hero Section -->
+                    <section class="hero-section">
+                        <div class="hero-content">
+                            <span class="tag" data-i18n="hero_tag">Bestseller del Mes</span>
+                            <h1 data-i18n="hero_title">Ecos del Futuro</h1>
+                            <p data-i18n="hero_desc">Una inmersión profunda en las tecnologías que moldearán nuestro
+                                mañana, escrita por los visionarios de hoy.</p>
+                            <div class="hero-actions">
+                                <button class="btn-primary" data-i18n="btn_read_now">Leer Ahora (Gratis)</button>
+                                <button class="btn-secondary add-favorite-btn"><i class="ri-heart-line"></i> <span
+                                        data-i18n="btn_save">Guardar</span></button>
+                            </div>
+                        </div>
+                        <div class="hero-image">
+                            <div class="book-cover-mockup hero-mockup">
+                                <i class="ri-rocket-2-fill"></i>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Trending Section -->
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_trending">Tendencias Actuales</h2>
+                            <a href="#" class="view-all" data-i18n="btn_view_all">Ver todos</a>
+                        </div>
+
+                        <!-- Book Grid populated via JS to allow filtering -->
+                        <div class="book-grid" id="mainBookGrid">
+                            <!-- Books injected here by script.js -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- EXPLORAR TAB -->
+                <div class="tab-content" id="tab-explorar">
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_explore">Explorar Catálogo</h2>
+                        </div>
+                        activeCategory: 'all'
+                        <!-- Genre Pills -->
+                        <div class="genre-pills">
+                            <button class="pill active" data-category="all">Todos</button>
+                            <button class="pill" data-category="ciencia_ficcion">Ciencia Ficción</button>
+                            <button class="pill" data-category="fantasia">Fantasía</button>
+                            <button class="pill" data-category="romance">Romance</button>
+                            <button class="pill" data-category="misterio">Misterio</button>
+                            <button class="pill" data-category="tecnologia">Tecnología</button>
+                            <button class="pill" data-category="autoayuda">Autoayuda</button>
+                            <button class="pill" data-category="negocios">Negocios</button>
+                            <button class="pill" data-category="historia">Historia</button>
+                        </div>
+                        <div class="book-grid" id="exploreBookGrid">
+                            <!-- Books injected here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- MIS LIBROS & FAVORITOS TABS (Placeholder structure) -->
+                <div class="tab-content" id="tab-mis-libros">
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_library">Mi Biblioteca</h2>
+                        </div>
+                        <p data-i18n="empty_library">Aún no has guardado libros para leer más tarde.</p>
+                    </section>
+                </div>
+
+                <div class="tab-content" id="tab-favoritos">
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_favorites">Mis Favoritos</h2>
+                        </div>
+                        <div class="book-grid" id="favoritesBookGrid">
+                            <!-- Favorite Books injected here -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Footer: Newsletter & Partners -->
+                <footer class="app-footer">
+                    <div class="newsletter">
+                        <h3 data-i18n="news_title">Únete a Lumière Premium</h3>
+                        <p data-i18n="news_desc">Recibe promociones exclusivas, descuentos en libros de pago y recomendaciones personalizadas por correo electrónico.</p>
+                        <form class="newsletter-form" id="newsletterForm">
+                            <input type="email" placeholder="Tu correo electrónico..." required
+                                data-i18n-placeholder="email_placeholder">
+                            <button type="submit" class="btn-primary"><i class="ri-mail-send-line"></i> <span
+                                    data-i18n="btn_subscribe">Suscribirse</span></button>
+                        </form>
+                    </div>
+
+                    <div class="partnerships">
+                        <h4 data-i18n="partners_title">Con el apoyo de nuestros socios:</h4>
+                        <div class="partner-logos">
+                            <span><i class="ri-amazon-line"></i> Publishers</span>
+                            <span><i class="ri-google-play-line"></i> Books</span>
+                            <span><i class="ri-apple-line"></i> Media</span>
+                            <span><i class="ri-pen-nib-line"></i> Editores Indies</span>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </main>
+        
+        <!-- Book Details Modal -->
+        <div class="modal-overlay" id="bookModal">
+            <div class="modal-content">
+                <button class="close-modal" id="closeModalBtn"><i class="ri-close-line"></i></button>
+                <div class="modal-body">
+                    <div class="modal-cover mockup-1" id="modalCover">
+                        <i class="ri-planet-line"></i>
+                    </div>
+                    <div class="modal-info">
+                        <!-- Premium/Price Tag inside modal -->
+                        <span class="price-tag large" id="modalPrice">$0.00</span>
+                        
+                        <h2 id="modalTitle">Título del Libro</h2>
+                        <span class="author-large" id="modalAuthor">Autor</span>
+                        <div class="modal-meta">
+                            <span><i class="ri-star-fill"></i> 4.8</span>
+                            <span><i class="ri-time-line"></i> 12h 30m</span>
+                            <span><i class="ri-book-open-line"></i> 342 pág</span>
+                        </div>
+                        <p class="description" id="modalDesc">
+                            Cargando descripción...
+                        </p>
+                        <div class="modal-actions">
+                            <button class="btn-primary" id="modalMainAction" data-i18n="btn_read_now">Comenzar a Leer</button>
+                            <!-- NEW Preview Button -->
+                            <button class="btn-secondary" id="modalPreviewAction"><i class="ri-eye-line"></i> <span data-i18n="btn_preview">Vista Previa</span></button>
+                            
+                            <button class="icon-btn-lg add-favorite-btn"><i class="ri-heart-add-line"></i></button>
+                            <button class="icon-btn-lg"><i class="ri-share-line"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Reading View (Hidden by default) -->
+                    <div class="reading-container" id="readingContainer">
+                        <div class="reading-header">
+                            <button class="btn-back-details" id="btnBackToDetails">
+                                <i class="ri-arrow-left-line"></i> <span data-i18n="btn_back">Volver</span>
+                            </button>
+                            
+                            <div class="reader-controls">
+                                <!-- Font Size -->
+                                <div class="control-group">
+                                    <button class="reader-btn" id="decreaseFont" title="Disminuir letra">A-</button>
+                                    <button class="reader-btn" id="increaseFont" title="Aumentar letra">A+</button>
+                                </div>
+                                <!-- Font Family -->
+                                <div class="control-group">
+                                    <button class="reader-btn" id="toggleFontFamily" title="Cambiar fuente">
+                                        <i class="ri-font-size"></i>
+                                    </button>
+                                </div>
+                                <!-- Themes -->
+                                <div class="control-group themes">
+                                    <button class="theme-dot light active" data-theme="light" title="Modo Día"></button>
+                                    <button class="theme-dot sepia" data-theme="sepia" title="Modo Sepia"></button>
+                                    <button class="theme-dot dark" data-theme="dark" title="Modo Noche"></button>
+                                </div>
+                            </div>
+
+                            <div class="modal-meta" style="margin-bottom: 0; margin-left: auto;">
+                                <span id="readingTitle" style="font-weight: 700;">Título</span>
+                            </div>
+                        </div>
+                        <div class="reading-content" id="readingContentText">
+                            <!-- Full book text injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication Modal (Login/Register) -->
+        <div class="modal-overlay" id="authModal">
+            <div class="modal-content auth-modal-content">
+                <button class="close-modal" id="closeAuthModalBtn"><i class="ri-close-line"></i></button>
+                <div class="auth-forms">
+                    <div class="auth-header">
+                        <h2 data-i18n="auth_title">Bienvenido a Lumière</h2>
+                        <p data-i18n="auth_desc">Inicia sesión o crea una cuenta para guardar tus libros y acceder a
+                            contenido Premium.</p>
+                    </div>
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-target="login" id="loginTabBtn"
+                            data-i18n="tab_login">Iniciar Sesión</button>
+                        <button class="auth-tab" data-target="register" id="registerTabBtn"
+                            data-i18n="tab_register">Registrarse</button>
+                    </div>
+
+                    <form id="loginForm" class="auth-form active">
+                        <div class="form-group">
+                            <label data-i18n="label_email">Correo Electrónico</label>
+                            <input type="email" required placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="label_password">Contraseña</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary w-100" data-i18n="btn_login_submit">Entrar</button>
+                    </form>
+
+                    <form id="registerForm" class="auth-form">
+                        <div class="form-group">
+                            <label data-i18n="label_name">Nombre Completo</label>
+                            <input type="text" required placeholder="Tu Nombre">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="label_email">Correo Electrónico</label>
+                            <input type="email" required placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="label_password">Contraseña</label>
+                            <input type="password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-primary w-100" data-i18n="btn_register_submit">Crear
+                            Cuenta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- The Javascript file holding our logic -->
+    <script src="script.js"></script>
+</body>
+
+</html>
