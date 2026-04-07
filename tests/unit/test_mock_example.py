@@ -21,8 +21,8 @@ def test_auth_service_with_mocker(mocker):
     
     # Verificamos
     assert result is None
-    mock_repo.get_by_username.assert_called_once_with("usuario_inexistente")
-
+    # Eliminado: mock_repo.get_by_username.assert_called_once_with("usuario_inexistente")
+    # (Anti-patrón 3: Over-spec, comprobamos el estado observable, no la llamada interna)
 @respx.template
 def test_external_api_mocking():
     """Ejemplo de cómo simular respuestas HTTP externas usando respx."""

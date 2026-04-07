@@ -27,3 +27,8 @@ htmlcov/
 .nox/
 .hypothesis/
 coverage.xml
+
+# Apuntes y archivos temporales personales del desarrollador
+apuntes*.md
+newFile*.js
+_apuntes/

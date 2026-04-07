@@ -111,24 +111,31 @@
             </div>
             <div class="mermaid-container">
                 <div class="mermaid">
-                graph TD
-                    subgraph "Frontend (Cliente)"
-                        A[Browser UI] -->|Fetch Sync| B[API Gateway]
-                    end
+                    graph TD
+                        subgraph "Capa Frontend (Cliente)"
+                            A[Interfaz Web / script.js]
+                        end
 
-                    subgraph "Backend (FastAPI)"
-                        B --> C[Routers: def get_books]
-                        C --> D[Service: BookService]
-                        D --> E[Port: BookRepositoryPort]
-                    end
+                        subgraph "Capa Backend (FastAPI)"
+                            B[Routers / Endpoints]
+                            C[Servicios de Negocio]
+                            D[Puertos / Interfaces]
+                        end
 
-                    subgraph "Infrastructure"
-                        E --> F[Adapter: BookRepositoryMock]
-                        F -.->|In-Memory Map| G[(JSON/Dict Data)]
-                    end
+                        subgraph "Capa Infraestructura"
+                            E[Adaptadores Mock]
+                            F[(Memoria Volátil)]
+                        end
 
-                    style F fill:#f9f,stroke:#333,stroke-width:2px
-                    style B fill:#bbf,stroke:#333
+                        A -->|HTTP Fetch (Síncrono)| B
+                        B --> C
+                        C --> D
+                        D -.->|Implementa| E
+                        E --> F
+
+                        style A fill:#fdf6e3,stroke:#b58900,stroke-width:2px
+                        style B fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px
+                        style E fill:#fce4ec,stroke:#c2185b,stroke-width:2px
                 </div>
             </div>
         </section>
@@ -140,31 +147,39 @@
             </div>
             <div class="mermaid-container">
                 <div class="mermaid">
-                graph LR
-                    subgraph "Primary Adapters (Driving)"
-                        R[Routers async def]
-                    end
+                    graph LR
+                        subgraph "Frontend (Web/App)"
+                            UI[Aplicación Web]
+                        end
 
-                    subgraph "Domain (Core)"
-                        S[BookService async]
-                        P{BookRepositoryPort async}
-                    end
+                        subgraph "Adaptadores Primarios (Entrada)"
+                            R[Routers HTTP Async]
+                        end
 
-                    subgraph "Secondary Adapters (Driven)"
-                        SQLite[aiosqlite Adapter]
-                        Mock[Mock Adapter]
-                    end
+                        subgraph "Núcleo del Dominio (Core)"
+                            S[Application Services]
+                            P{Puertos de Repositorio}
+                        end
 
-                    R -->|Await| S
-                    S --> P
-                    P -.->|Implementation| SQLite
-                    P -.->|Implementation| Mock
-                    
-                    SQLite --> DB[(lumiere.db)]
+                        subgraph "Adaptadores Secundarios (Salida)"
+                            SQLite[Adaptador Base Datos]
+                            Mock[Adaptador Mock]
+                        end
 
-                    style P fill:#fecaca,stroke:#b91c1c,stroke-width:3px
-                    style S fill:#dcfce7,stroke:#15803d
-                    style R fill:#dbeafe,stroke:#1d4ed8
+                        %% Conexiones explícitas
+                        UI ==>|REST API / JSON| R
+                        R -->|Await Ejecuta| S
+                        S -->|Usa| P
+                        P -.->|Implementación 1| SQLite
+                        P -.->|Implementación 2| Mock
+                        
+                        SQLite --> DB[(Base de Datos Real)]
+
+                        %% Estilos
+                        style UI fill:#fef08a,stroke:#a16207,stroke-width:2px
+                        style P fill:#fecaca,stroke:#b91c1c,stroke-width:2px
+                        style S fill:#dcfce7,stroke:#15803d,stroke-width:2px
+                        style R fill:#dbeafe,stroke:#1d4ed8,stroke-width:2px
                 </div>
             </div>
         </section>

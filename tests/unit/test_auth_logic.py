@@ -30,11 +30,10 @@ def test_authenticate_user_success(auth_service, mock_repo, mock_security):
     # Execute
     user = auth_service.authenticate_user("testuser", "correct_pass")
 
-    # Assert
+    # Assert - BIEN: Verificamos comportamiento observable, evitando Over-spec 
+    # (no forzamos assert_called_once_with en métodos internos puramente de lectura)
     assert user is not None
     assert user.username == "testuser"
-    mock_repo.get_by_username.assert_called_once_with("testuser")
-    mock_security.verify_password.assert_called_once_with("correct_pass", "hashed_pass")
 
 def test_authenticate_user_fail_wrong_pass(auth_service, mock_repo, mock_security):
     # Setup

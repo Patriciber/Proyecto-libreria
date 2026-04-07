@@ -12,6 +12,7 @@ from app.middleware import log_requests_middleware
 from app.routers.books import router as books_router
 from app.routers.newsletter import router as newsletter_router
 from app.routers.auth import router as auth_router
+from app.routers.favorites import router as favorites_router
 
 app = FastAPI(
     title=settings.app_name,
@@ -33,6 +34,7 @@ app.add_middleware(
 app.include_router(books_router)
 app.include_router(newsletter_router)
 app.include_router(auth_router)
+app.include_router(favorites_router)
 
 # Ruta para el análisis interactivo
 @app.get("/analisis")

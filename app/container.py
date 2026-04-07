@@ -9,7 +9,10 @@ from app.ports.repositories.book_repository import BookRepositoryPort
 from app.ports.repositories.user_repository import UserRepositoryPort
 from app.adapters.repositories.book_repository_mock import BookRepositoryMock
 from app.adapters.repositories.user_repository_mock import UserRepositoryMock
+from app.adapters.repositories.favorite_repository_mock import FavoriteRepositoryMock
 from app.adapters.security.security_adapter import SecurityAdapter
+from app.ports.repositories.favorite_repository import FavoriteRepositoryPort
+from app.domain.services.favorite_service import FavoriteService
 
 class DependencyContainer:
     """Contenedor de dependencias para la aplicación."""
@@ -20,6 +23,8 @@ class DependencyContainer:
         self._book_service: BookService = None
         self._auth_service: AuthService = None
         self._security_adapter: SecurityAdapter = None
+        self._favorite_repository: FavoriteRepositoryPort = None
+        self._favorite_service: FavoriteService = None
 
     @property
     def security_adapter(self) -> SecurityAdapter:
@@ -56,6 +61,20 @@ class DependencyContainer:
             self._auth_service = AuthService(self.user_repository, self.security_adapter)
         return self._auth_service
 
+    @property
+    def favorite_repository(self) -> FavoriteRepositoryPort:
+        """Lazy initialization del repositorio de favoritos."""
+        if self._favorite_repository is None:
+            self._favorite_repository = FavoriteRepositoryMock()
+        return self._favorite_repository
+        
+    @property
+    def favorite_service(self) -> FavoriteService:
+        """Lazy initialization del servicio de favoritos."""
+        if self._favorite_service is None:
+            self._favorite_service = FavoriteService(self.favorite_repository, self.book_repository)
+        return self._favorite_service
+
 # Instancia global del contenedor
 container = DependencyContainer()
 
@@ -74,3 +93,7 @@ def get_book_repository() -> BookRepositoryPort:
 def get_user_repository() -> UserRepositoryPort:
     """Factory function para obtener el repositorio de usuarios."""
     return container.user_repository
+
+def get_favorite_service() -> FavoriteService:
+    """Factory function para obtener el servicio de favoritos."""
+    return container.favorite_service

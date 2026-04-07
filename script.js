@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTab: 'inicio',
         activeCategory: 'all',
         searchQuery: '',
-        isSidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
+        isSidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+        cart: []
     };
 
     const sidebar = document.getElementById('sidebar');
@@ -144,15 +145,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<span class="price-tag paid">$${book.price}</span>`;
     }
 
+    function getBookCoverHTML(book) {
+        const imageMap = {
+            'tecnologia': 'assets/tech_book_cover.png',
+            'ciencia_ficcion': 'assets/scifi_book_cover.png',
+            'misterio': 'assets/mystery_book_cover.png',
+            'romance': 'assets/romance_book_cover.png',
+            'fantasia': 'assets/fantasy_book_cover.png',
+            'autoayuda': 'assets/selfhelp_book_cover.png'
+        };
+        const coverSrc = imageMap[book.category];
+        if (coverSrc) {
+            return `<img src="${coverSrc}" class="book-cover-img" alt="${book.title} portadilla">`;
+        }
+        return '';
+    }
+
     // Create the HTML card for a book
     function createBookCard(book) {
+        const cartBtn = book.price > 0 ? 
+            `<button class="card-action-btn" data-action="add-to-cart" data-id="${book.id}">
+                <i class="ri-shopping-cart-2-add-line"></i>
+             </button>` : '';
+
         return `
                 <div class="book-card" tabindex="0" data-id="${book.id}">
                     <div class="book-cover ${book.coverStyle}">
+                        ${getBookCoverHTML(book)}
                         ${formatPrice(book)}
-                        <button class="card-action-btn ${book.isFavorite ? 'active' : ''}" data-action="favorite" data-id="${book.id}">
+                        <button class="card-action-btn ${book.isFavorite ? 'active' : ''}" data-action="favorite" data-id="${book.id}" style="right: ${book.price > 0 ? '60px' : '10px'}">
                             <i class="ri-heart-${book.isFavorite ? 'fill' : 'line'}"></i>
                         </button>
+                        ${cartBtn}
                         <i class="${book.icon}"></i>
                         <div class="overlay">
                             <button class="play-btn" data-action="open-modal" data-id="${book.id}"><i class="ri-play-fill"></i></button>
@@ -259,7 +283,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.book-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 if (e.target.closest('.card-action-btn')) {
-                    toggleFavorite(e, e.target.closest('.card-action-btn').getAttribute('data-id'));
+                    const btn = e.target.closest('.card-action-btn');
+                    const action = btn.getAttribute('data-action');
+                    const bookId = parseInt(btn.getAttribute('data-id'));
+                    
+                    if (action === 'favorite') {
+                        toggleFavorite(e, bookId);
+                    } else if (action === 'add-to-cart') {
+                        e.stopPropagation();
+                        addToCart(bookId);
+                    }
                     return;
                 }
                 const bookId = parseInt(card.getAttribute('data-id'));
@@ -294,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const coverDiv = document.getElementById('modalCover');
         coverDiv.className = `modal-cover ${book.coverStyle}`;
-        coverDiv.innerHTML = `<i class="${book.icon}"></i>`;
+        coverDiv.innerHTML = getBookCoverHTML(book) || `<i class="${book.icon}"></i>`;
 
         const priceEl = document.getElementById('modalPrice');
         priceEl.innerHTML = formatPrice(book).replace('price-tag', 'price-tag large');
@@ -489,4 +522,84 @@ Logueado actualmente: ${appState.isLoggedIn ? 'SÍ (' + appState.userName + ')' 
     // --- INITIALIZATION ---
     updateLanguage();
     fetchBooks();
+    
+    // --- CART MANAGEMENT ---
+    function updateCartBadge() {
+        const badge = document.getElementById('cartBadge');
+        if (badge) {
+            badge.textContent = appState.cart.length;
+            badge.style.display = appState.cart.length > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function addToCart(bookId) {
+        const book = mockBooks.find(b => b.id === bookId);
+        if (book && book.price > 0 && !appState.cart.some(i => i.id === bookId)) {
+            appState.cart.push(book);
+            updateCartBadge();
+            alert(`Añadido: ${book.title} al carrito.`);
+        } else if (appState.cart.some(i => i.id === bookId)) {
+            alert('El libro ya está en tu carrito.');
+        }
+    }
+
+    function renderCartModal() {
+        const container = document.getElementById('cartItemsContainer');
+        const subtotalEl = document.getElementById('cartSubtotal');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        
+        if (!container) return;
+
+        if (appState.cart.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-dim)">El carrito está vacío.</p>';
+            subtotalEl.textContent = '$0.00';
+            checkoutBtn.disabled = true;
+            return;
+        }
+
+        checkoutBtn.disabled = false;
+        let subtotal = 0;
+        
+        container.innerHTML = appState.cart.map(book => {
+            subtotal += book.price;
+            return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <h4>${book.title}</h4>
+                        <span class="cart-item-price">$${book.price.toFixed(2)}</span>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeFromCart(${book.id})"><i class="ri-delete-bin-line"></i></button>
+                </div>
+            `;
+        }).join('');
+        
+        subtotalEl.textContent = '$' + subtotal.toFixed(2);
+    }
+    
+    window.removeFromCart = function(bookId) {
+        appState.cart = appState.cart.filter(b => b.id !== bookId);
+        updateCartBadge();
+        renderCartModal();
+    };
+
+    const cartToggleBtn = document.getElementById('cartToggleBtn');
+    if (cartToggleBtn) {
+        cartToggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderCartModal();
+            document.getElementById('cartModal').classList.add('active');
+        });
+    }
+
+    // Modal click-outside dismissal updates
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('authModal')) {
+            document.getElementById('authModal').classList.remove('active');
+        }
+        if (event.target === document.getElementById('cartModal')) {
+            document.getElementById('cartModal').classList.remove('active');
+        }
+    };
+
+    updateCartBadge();
 });
