@@ -3,13 +3,360 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Catálogo de Libros</title>
+
+    <!-- PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a5acd, #836fff);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.4rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin-top: 8px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        #top-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        #filters select {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+        }
+
+        #cart {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        #books-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            padding: 40px;
+            max-width: 1300px;
+            margin: auto;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 180px;
+            background: #ddd;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .book-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .book-card p {
+            margin: 6px 0;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .price {
+            color: #2e8b57;
+            font-weight: bold;
+        }
+
+        .premium {
+            color: #8b008b;
+            font-weight: bold;
+        }
+
+        .btn {
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #6a5acd;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #5948c4;
+        }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 40px;
+        }
+
+        #pagination button {
+            padding: 8px 14px;
+            background: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #pagination button:hover {
+            background: #5948c4;
+        }
+
+        #page-info {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>📚 Catálogo de Libros</h1>
+        <p>Explora nuestra colección</p>
+
+        <div id="top-bar">
+            <div id="filters">
+                <select id="filter-price" onchange="apply_filters_py()">
+                    <option value="all">Todos los precios</option>
+                    <option value="free">Gratis</option>
+                    <option value="premium">Premium</option>
+                    <option value="paid">De pago</option>
+                </select>
+
+                <select id="filter-author" onchange="apply_filters_py()">
+                    <option value="all">Todos los autores</option>
+                </select>
+            </div>
+
+            <div id="cart">
+                🛒 Carrito: <span id="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="books-container">Cargando libros...</div>
+
+    <div id="pagination">
+        <button id="prev-page" onclick="prev_page_py()">Anterior</button>
+        <span id="page-info"></span>
+        <button id="next-page" onclick="next_page_py()">Siguiente</button>
+    </div>
+
+    <py-script>
+        import js
+        from pyodide.http import pyfetch
+        import asyncio
+
+        books_data = []
+        filtered_books = []
+        cart = []
+        current_page = 1
+        books_per_page = 6
+
+        def render_cart():
+        js.document.getElementById("cart-count").innerText = str(len(cart))
+
+        def add_to_cart_py(index):
+        cart.append(books_data[index])
+        render_cart()
+
+        def apply_filters():
+        global filtered_books, current_page
+        price_filter = js.document.getElementById("filter-price").value
+        author_filter = js.document.getElementById("filter-author").value
+
+        filtered = books_data
+
+        if price_filter == "free":
+        filtered = [b for b in filtered if b["price"] == 0 and not b["isPremium"]]
+        elif price_filter == "premium":
+        filtered = [b for b in filtered if b["isPremium"]]
+        elif price_filter == "paid":
+        filtered = [b for b in filtered if b["price"] > 0]
+
+        if author_filter != "all":
+        filtered = [b for b in filtered if b["author"] == author_filter]
+
+        filtered_books = filtered
+        current_page = 1
+        render_books()
+
+        def apply_filters_py():
+        apply_filters()
+
+        def render_books():
+        global current_page
+        container = js.document.getElementById("books-container")
+
+        if not filtered_books:
+        container.innerHTML = "<p>No hay libros que coincidan con los filtros.</p>"
+        js.document.getElementById("page-info").innerText = "0 / 0"
+        return
+
+        start = (current_page - 1) * books_per_page
+        end = start + books_per_page
+        page_books = filtered_books[start:end]
+
+        html_output = ""
+
+        for i, book in enumerate(page_books):
+        real_index = start + i
+
+        price_class = "premium" if book['isPremium'] and book['price'] == 0 else "price"
+        price_text = (
+        "Gratis" if book['price'] == 0 and not book['isPremium']
+        else "Premium" if book['isPremium'] and book['price'] == 0
+        else f"${book['price']}"
+        )
+
+        cover = book.get("cover", "https://via.placeholder.com/300x180?text=Sin+Portada")
+
+        html_output += f"""
+        <div class="book-card">
+            <div class="book-cover" style="background-image: url('{cover}')"></div>
+            <h3>{book['title']}</h3>
+            <p><strong>Autor:</strong> {book['author']}</p>
+            <p class="{price_class}">{price_text}</p>
+            <button class="btn" onclick="add_to_cart_py({real_index})">Añadir al carrito</button>
+        </div>
+        """
+
+        container.innerHTML = html_output
+
+        total_pages = (len(filtered_books) + books_per_page - 1) // books_per_page
+        js.document.getElementById("page-info").innerText = f"{current_page} / {total_pages}"
+
+        def next_page_py():
+        next_page()
+
+        def prev_page_py():
+        prev_page()
+
+        def next_page():
+        global current_page
+        total_pages = (len(filtered_books) + books_per_page - 1) // books_per_page
+        if current_page < total_pages: current_page +=1 render_books() def prev_page(): global current_page if
+            current_page> 1:
+            current_page -= 1
+            render_books()
+
+            async def fetch_books():
+            global books_data, filtered_books
+
+            response = await pyfetch("http://127.0.0.1:8080/api/books", method="GET")
+            books_data = await response.json()
+            filtered_books = books_data
+
+            authors = sorted(set([b["author"] for b in books_data]))
+            author_select = js.document.getElementById("filter-author")
+            for a in authors:
+            option = js.document.createElement("option")
+            option.value = a
+            option.textContent = a
+            author_select.appendChild(option)
+
+            render_cart()
+            render_books()
+
+            # Exponer funciones a JS
+            js.apply_filters_py = apply_filters_py
+            js.add_to_cart_py = add_to_cart_py
+            js.next_page_py = next_page_py
+            js.prev_page_py = prev_page_py
+
+            asyncio.ensure_future(fetch_books())
+    </py-script>
+
+</body>
+
+</html>
+
+<head>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Catálogo de Libros</title>
+
+        <!-- PyScript -->
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+        <style>
+            /* Aquí van los estilos del catálogo */
+            /* (te los puedo volver a pegar si los necesitas completos) */
+        </style>
+    </head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="page_title">Lumière - Digital Library</title>
+
+    <!-- CSS & Fonts -->
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- PyScript (opcional, configurado pero no requerido si usas JS) -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
 
 <body>
@@ -34,7 +381,8 @@
                         data-i18n="nav_library">Mi Biblioteca</span></a>
                 <a href="#" class="nav-item" data-tab="favoritos"><i class="ri-heart-3-line"></i> <span
                         data-i18n="nav_favorites">Favoritos</span></a>
-                <a href="#" class="nav-item" id="cartToggleBtn"><i class="ri-shopping-cart-2-line"></i> <span>Carrito</span> <span id="cartBadge" class="cart-badge">0</span></a>
+                <a href="#" class="nav-item" id="cartToggleBtn"><i class="ri-shopping-cart-2-line"></i>
+                    <span>Carrito</span> <span id="cartBadge" class="cart-badge">0</span></a>
             </nav>
 
             <!-- System Diagnostic Section -->
@@ -193,7 +541,8 @@
                 <footer class="app-footer">
                     <div class="newsletter">
                         <h3 data-i18n="news_title">Únete a Lumière Premium</h3>
-                        <p data-i18n="news_desc">Recibe promociones exclusivas, descuentos en libros de pago y recomendaciones personalizadas por correo electrónico.</p>
+                        <p data-i18n="news_desc">Recibe promociones exclusivas, descuentos en libros de pago y
+                            recomendaciones personalizadas por correo electrónico.</p>
                         <form class="newsletter-form" id="newsletterForm">
                             <input type="email" placeholder="Tu correo electrónico..." required
                                 data-i18n-placeholder="email_placeholder">
@@ -214,7 +563,7 @@
                 </footer>
             </div>
         </main>
-        
+
         <!-- Book Details Modal -->
         <div class="modal-overlay" id="bookModal">
             <div class="modal-content">
@@ -226,7 +575,7 @@
                     <div class="modal-info">
                         <!-- Premium/Price Tag inside modal -->
                         <span class="price-tag large" id="modalPrice">$0.00</span>
-                        
+
                         <h2 id="modalTitle">Título del Libro</h2>
                         <span class="author-large" id="modalAuthor">Autor</span>
                         <div class="modal-meta">
@@ -238,10 +587,12 @@
                             Cargando descripción...
                         </p>
                         <div class="modal-actions">
-                            <button class="btn-primary" id="modalMainAction" data-i18n="btn_read_now">Comenzar a Leer</button>
+                            <button class="btn-primary" id="modalMainAction" data-i18n="btn_read_now">Comenzar a
+                                Leer</button>
                             <!-- NEW Preview Button -->
-                            <button class="btn-secondary" id="modalPreviewAction"><i class="ri-eye-line"></i> <span data-i18n="btn_preview">Vista Previa</span></button>
-                            
+                            <button class="btn-secondary" id="modalPreviewAction"><i class="ri-eye-line"></i> <span
+                                    data-i18n="btn_preview">Vista Previa</span></button>
+
                             <button class="icon-btn-lg add-favorite-btn"><i class="ri-heart-add-line"></i></button>
                             <button class="icon-btn-lg"><i class="ri-share-line"></i></button>
                         </div>
@@ -253,7 +604,7 @@
                             <button class="btn-back-details" id="btnBackToDetails">
                                 <i class="ri-arrow-left-line"></i> <span data-i18n="btn_back">Volver</span>
                             </button>
-                            
+
                             <div class="reader-controls">
                                 <!-- Font Size -->
                                 <div class="control-group">
@@ -339,6 +690,14 @@
 
     <!-- The Javascript file holding our logic -->
     <script src="script.js"></script>
+    <py-script>
+        <!-- Aquí va TODO el código Python del carrito, filtros y paginación -->
+    </py-script>
+
+</body>
+
+</html>
+
 </body>
 
 </html>
