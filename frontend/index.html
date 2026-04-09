@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="page_title">Lumière - Digital Library</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Lumière - Tu biblioteca digital premium con los mejores libros y una experiencia de lectura inigualable.">
+    <meta name="keywords" content="biblioteca, libros, digital, lectura, premium, cultura">
+
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <button id="btnSidebarToggle" class="sidebar-toggle-btn">
+                    <i class="ri-menu-fold-line"></i>
+                </button>
+                <i class="ri-book-3-fill"></i>
+                <span>Lumière</span>
+            </div>
+
+            <nav class="nav-menu">
+                <p class="nav-label" data-i18n="menu_label">MENU</p>
+                <a href="#" class="nav-item active" data-tab="inicio"><i class="ri-home-5-line"></i> <span data-i18n="nav_inicio">Inicio</span></a>
+                <a href="#" class="nav-item" data-tab="explorar"><i class="ri-compass-3-line"></i> <span data-i18n="nav_explore">Explorar</span></a>
+                <a href="#" class="nav-item" data-tab="mis-libros"><i class="ri-bookmark-line"></i> <span data-i18n="nav_library">Mi Biblioteca</span></a>
+                <a href="#" class="nav-item" data-tab="favoritos"><i class="ri-heart-3-line"></i> <span data-i18n="nav_favorites">Favoritos</span></a>
+                <a href="#" class="nav-item" id="cartToggleBtn"><i class="ri-shopping-cart-2-line"></i> <span>Carrito</span> <span id="cartBadge" class="cart-badge">0</span></a>
+            </nav>
+
+            <nav class="nav-menu">
+                <p class="nav-label">HERRAMIENTAS</p>
+                <a href="#" class="nav-item" id="btnSystemStatus">
+                    <i class="ri-shield-check-line"></i> <span>Estado Sistema</span>
+                </a>
+            </nav>
+
+            <nav class="nav-menu" id="sidebarGenreFilter">
+                <p class="nav-label" data-i18n="categories_label">GÉNEROS</p>
+                <a href="#" class="nav-item category-filter active" data-category="all"><i class="ri-layout-grid-line"></i> <span data-i18n="cat_all">Todos</span></a>
+                <a href="#" class="nav-item category-filter" data-category="ciencia_ficcion"><i class="ri-rocket-line"></i> <span data-i18n="cat_scifi">Ciencia Ficción</span></a>
+                <a href="#" class="nav-item category-filter" data-category="fantasia"><i class="ri-magic-line"></i> <span data-i18n="cat_fantasy">Fantasía</span></a>
+                <a href="#" class="nav-item category-filter" data-category="romance"><i class="ri-empathize-line"></i> <span data-i18n="cat_romance">Romance</span></a>
+                <a href="#" class="nav-item category-filter" data-category="misterio"><i class="ri-search-eye-line"></i> <span data-i18n="cat_mystery">Misterio</span></a>
+                <a href="#" class="nav-item category-filter" data-category="tecnologia"><i class="ri-macbook-line"></i> <span data-i18n="cat_tech">Tecnología</span></a>
+                <a href="#" class="nav-item category-filter" data-category="terror"><i class="ri-skull-line"></i> <span data-i18n="cat_horror">Terror</span></a>
+            </nav>
+
+            <!-- User Auth / Profile Area -->
+            <div class="user-profile-sm" id="userProfileBtn">
+                <img src="https://i.pravatar.cc/150?img=12" alt="User Profile" class="avatar" style="display: none;" id="userAvatarImg">
+                <i class="ri-user-unfollow-line avatar-placeholder" id="userAvatarPlaceholder"></i>
+                <div class="user-info">
+                    <span class="name" id="userNameDisplay" data-i18n="login_prompt">Iniciar Sesión</span>
+                    <span class="plan" id="userPlanDisplay" style="display:none;">Free Member</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar libros..." data-i18n-placeholder="search_placeholder">
+                </div>
+
+                <div class="header-actions">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" data-lang="es">ES</button>
+                        <span class="lang-div">/</span>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                    <button class="upgrade-btn" data-i18n="btn_premium">Premium</button>
+                </div>
+            </header>
+
+            <div class="content-scroll">
+                <!-- INICIO TAB -->
+                <div class="tab-content active" id="tab-inicio">
+                    <section class="hero-section">
+                        <div class="hero-content">
+                            <span class="tag" data-i18n="hero_tag">Bestseller del Mes</span>
+                            <h1 data-i18n="hero_title">Ecos del Futuro</h1>
+                            <p data-i18n="hero_desc">Explora el mañana hoy.</p>
+                            <div class="hero-actions">
+                                <button class="btn-primary" data-i18n="btn_read_now">Leer Ahora</button>
+                            </div>
+                        </div>
+                        <div class="hero-image">
+                            <div class="book-cover-mockup hero-mockup">
+                                <img src="assets/scifi_cover.png" class="book-cover-img" alt="Hero Cover">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_trending">Tendencias</h2>
+                        </div>
+                        <div class="book-grid" id="mainBookGrid"></div>
+                    </section>
+                </div>
+
+                <!-- EXPLORAR TAB -->
+                <div class="tab-content" id="tab-explorar">
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_explore">Explorar Catálogo</h2>
+                            <div class="filter-controls">
+                                <select id="filter-price-select" class="premium-select">
+                                    <option value="all">Precios</option>
+                                    <option value="free">Gratis</option>
+                                    <option value="premium">Premium</option>
+                                    <option value="paid">De pago</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="genre-pills">
+                            <button class="pill active" data-category="all">Todos</button>
+                            <button class="pill" data-category="ciencia_ficcion">Ciencia Ficción</button>
+                            <button class="pill" data-category="fantasia">Fantasía</button>
+                            <button class="pill" data-category="romance">Romance</button>
+                            <button class="pill" data-category="misterio">Misterio</button>
+                            <button class="pill" data-category="tecnologia">Tecnología</button>
+                            <button class="pill" data-category="terror">Terror</button>
+                        </div>
+
+                        <div class="book-grid" id="exploreBookGrid"></div>
+
+                        <!-- Pagination UI -->
+                        <div class="pagination-container">
+                            <button id="prevPageBtn" class="pagination-btn"><i class="ri-arrow-left-s-line"></i></button>
+                            <span id="pageInfoDisplay" class="page-info">1 / 1</span>
+                            <button id="nextPageBtn" class="pagination-btn"><i class="ri-arrow-right-s-line"></i></button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- OTRAS TABS -->
+                <div class="tab-content" id="tab-favoritos">
+                    <section class="book-section">
+                        <div class="section-header">
+                            <h2 data-i18n="section_favorites">Mis Favoritos</h2>
+                        </div>
+                        <div class="book-grid" id="favoritesBookGrid"></div>
+                    </section>
+                </div>
+
+                <!-- Footer -->
+                <footer class="app-footer">
+                    <div class="newsletter">
+                        <h3 data-i18n="news_title">Lumière Premium</h3>
+                        <form class="newsletter-form" id="newsletterForm">
+                            <input type="email" placeholder="Tu email..." required data-i18n-placeholder="email_placeholder">
+                            <button type="submit" class="btn-primary" data-i18n="btn_subscribe">Suscribirse</button>
+                        </form>
+                    </div>
+                </footer>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div class="modal-overlay" id="bookModal">
+            <div class="modal-content">
+                <button class="close-modal" id="closeModalBtn"><i class="ri-close-line"></i></button>
+                <div class="modal-body">
+                    <div class="modal-cover" id="modalCover"></div>
+                    <div class="modal-info">
+                        <span class="price-tag large" id="modalPrice"></span>
+                        <h2 id="modalTitle"></h2>
+                        <span class="author-large" id="modalAuthor"></span>
+                        <p class="description" id="modalDesc"></p>
+                        <div class="modal-actions">
+                            <button class="btn-primary" id="modalMainAction" data-i18n="btn_read_now">Leer Ahora</button>
+                            <button class="btn-secondary" id="modalCartAction">
+                                <i class="ri-shopping-cart-2-add-line"></i> <span data-i18n="btn_add_to_cart">Añadir al Carrito</span>
+                            </button>
+                            <button class="icon-btn-lg" id="modalFavAction">
+                                <i class="ri-heart-line"></i>
+                            </button>
+                            <button class="btn-secondary" id="modalPreviewAction">Vista Previa</button>
+                        </div>
+                    </div>
+                    <!-- Reader View -->
+                    <div class="reading-container" id="readingContainer">
+                        <div class="reading-header">
+                            <button class="btn-back-details" id="btnBackToDetails"><i class="ri-arrow-left-line"></i></button>
+                            <div class="reader-controls">
+                                <button class="reader-btn" id="decreaseFont">A-</button>
+                                <button class="reader-btn" id="increaseFont">A+</button>
+                                <div class="themes">
+                                    <button class="theme-dot light active" data-theme="light"></button>
+                                    <button class="theme-dot sepia" data-theme="sepia"></button>
+                                    <button class="theme-dot dark" data-theme="dark"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="reading-content" id="readingContentText"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Modal -->
+        <div class="modal-overlay" id="authModal">
+            <div class="modal-content auth-modal-content">
+                <button class="close-modal" id="closeAuthModalBtn"><i class="ri-close-line"></i></button>
+                <div class="auth-forms">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-target="login" id="loginTabBtn">Login</button>
+                        <button class="auth-tab" data-target="register" id="registerTabBtn">Registro</button>
+                    </div>
+                    <form id="loginForm" class="auth-form active">
+                        <input type="email" required placeholder="Email">
+                        <input type="password" required placeholder="Contraseña">
+                        <button type="submit" class="btn-primary w-100">Entrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Modal -->
+        <div class="modal-overlay" id="cartModal">
+            <div class="modal-content cart-modal-content">
+                <button class="close-modal" id="closeCartModalBtn"><i class="ri-close-line"></i></button>
+                <h2 data-i18n="nav_cart">Tu Carrito</h2>
+                <div id="cartItemsContainer" class="cart-items-list"></div>
+                <div class="cart-footer">
+                    <div class="cart-total">Total: <span id="cartSubtotal">$0.00</span></div>
+                    <button class="btn-primary w-100" id="checkoutBtn">Finalizar Compra</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
